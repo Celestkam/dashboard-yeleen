@@ -1,0 +1,21 @@
+# Fichier .gitignore
+
+# Environnements virtuels et fichiers générés automatiquement
+env/
+Lib/
+Scripts/
+__pycache__/
+
+# Fichiers compilés
+*.pyc
+*.pyo
+*.pyd
+
+# Bases de données et journaux
+*.sqlite3
+*.db
+*.log
+
+# Fichiers système
+.DS_Store
+.vscode/
