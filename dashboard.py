@@ -29,8 +29,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-
-
 # Logos
 col1, col2, col3 = st.columns([1, 6, 1])
 with col1:
@@ -51,9 +49,9 @@ df["date"] = pd.to_datetime(df["date"])
 # Sidebar pour sélection dynamique
 st.sidebar.header("Sélection des Indicateurs")
 indicateurs_selectionnes = st.sidebar.multiselect(
-    "Indicateurs à afficher :",
-    df["indicateurs"].unique(),
-    default=df["indicateurs"].unique()
+    "indicateur à afficher :",
+    df["indicateur"].unique(),
+    default=df["indicateur"].unique()
 )
 
 # Mot de passe sécurisé
@@ -67,12 +65,12 @@ password = st.sidebar.text_input("Entrez le mot de passe pour modifier les donn�
 if password == PASSWORD:
     with st.sidebar.form("actualisation"):
         date_new = st.date_input("Date de l'indicateur")
-        domaine_new = st.selectbox("Domaine de l'indicateur", df["indicateurs"].unique())
+        domaine_new = st.selectbox("Domaine de l'indicateur", df["indicateur"].unique())
         valeur_new = st.number_input("Valeur de l'indicateur", min_value=0)
         submitted = st.form_submit_button("Ajouter")
 
         if submitted:
-            cursor.execute("INSERT INTO historique (date, indicateurs, valeur) VALUES (?, ?, ?)",
+            cursor.execute("INSERT INTO historique (date, indicateur, valeur) VALUES (?, ?, ?)",
                            (date_new.strftime('%Y-%m-%d'), domaine_new, valeur_new))
             conn.commit()
             st.success("Nouvel indicateur ajouté avec succès !")
@@ -86,22 +84,22 @@ onglets = st.tabs(["Historique", "Résumé", "Détails", "Carte", "Commentaires"
 # Onglet Historique
 with onglets[0]:
     st.header("Historique des indicateurs")
-    df_historique = df[df["indicateurs"].isin(indicateurs_selectionnes)]
-    fig = px.line(df_historique, x="date", y="valeur", color="indicateurs", markers=True,
+    df_historique = df[df["indicateur"].isin(indicateurs_selectionnes)]
+    fig = px.line(df_historique, x="date", y="valeur", color="indicateur", markers=True,
                   title="Évolution Temporelle des Indicateurs")
     st.plotly_chart(fig, use_container_width=True)
 
 # Onglet Résumé
 with onglets[1]:
     st.header("Résumé moyen par indicateur")
-    df_resume = df.groupby("indicateurs")["valeur"].mean().reset_index()
-    fig_resume = px.bar(df_resume, x="indicateurs", y="valeur", color="indicateurs", title="Résumé des Indicateurs")
+    df_resume = df.groupby("indicateur")["valeur"].mean().reset_index()
+    fig_resume = px.bar(df_resume, x="indicateur", y="valeur", color="indicateur", title="Résumé des Indicateurs")
     st.plotly_chart(fig_resume, use_container_width=True)
 
 # Onglet Détails
 with onglets[2]:
     st.header("Détails des indicateurs")
-    st.dataframe(df[df["indicateurs"].isin(indicateurs_selectionnes)])
+    st.dataframe(df[df["indicateur"].isin(indicateurs_selectionnes)])
 
     st.markdown("---")
     if st.button("Actualiser les données"):
